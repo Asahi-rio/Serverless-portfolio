@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>用件登録</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>用件登録</h1>
+
+    <form id="registrationForm" action="result.html">
+      <label for="task1">ここに用件を入力してください <span class="required">※必ずご入力ください</span></label>
+      <input type="text" id="task1" name="task1" maxlength="30">
+
+      <label for="task2">ここに用件を入力してください <span class= "helper">任意</span></label>
+      <input type="text" id="task2" name="task2" maxlength="30">
+      
+      <label for="task3">ここに用件を入力してください <span class= "helper">任意</span></label>
+      <input type="text" id="task3" name="task3" maxlength="30">
+      
+      <div class="btn-col">
+        <button type="submit" class="btn-sm btn-primary">次へ</button>
+        <a href="dashboard.html" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </form>
+  </div>
+<script src="/asset/js/common.js?v=5" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { validate, showError, hideError } = window.Common;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const form   = document.getElementById('registrationForm');
+    const task1  = document.getElementById('task1');
+    const task2  = document.getElementById('task2');
+    const task3  = document.getElementById('task3');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const values = [
+        task1.value.trim(),
+        task2.value.trim(),
+        task3.value.trim()
+      ];
+
+      if (!validate.isRequired(values[0])) {
+        showError(task1, '1つ目の用件は必ず入力してください。');
+        task1.focus();
+        return;
+      }
+      hideError(task1);
+
+      try {
+        const subjects = values.filter(v => v.length > 0);
+
+        for (const subject of subjects) {
+          const res = await fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subject })
+          });
+
+          const resultText = await res.text();
+          const result = JSON.parse(resultText);
+
+          if (res.status !== 200) {
+            alert(result.error || `登録に失敗しました：${subject}`);
+            return;
+          }
+        }
+
+        // すべて正常終了 → 遷移
+        window.location.href = 'result.html';
+
+      } catch (err) {
+        console.error('通信エラー:', err);
+        alert('サーバーと通信できませんでした');
+      }
+    });
+
+    task1.addEventListener('input', () => {
+      if (validate.isRequired(task1.value)) {
+        hideError(task1);
+      }
+    });
+  });
+</script>
+</body>
+</html>

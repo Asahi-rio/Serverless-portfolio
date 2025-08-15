@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>お名前・お電話番号入力</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>どのようなご用件でしょうか？</h1>
+
+    <form id="nameForm" novalidate>
+    
+      <label for="name">お名前 <span class="required">※必ずご入力ください</span></label>
+      <input type="text" id="name" name="name" maxlength="50" required>
+      <p id="nameError" class="error" hidden></p>
+
+      <label for="tel">お電話番号 <span class="helper">※任意（半角数字でご入力ください）</span></label>
+      <input type="tel" id="tel" name="tel" inputmode="tel" maxlength="20">
+      <p id="telError" class="error" hidden></p>
+
+      <div class="btn-col">
+        <button type="submit" class="btn-sm btn-primary">次へ</button>
+        <a href="contact.html" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="/asset/js/common.js?V=5" defer></script>
+
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  const { validate, showError, hideError } = Common;
+
+  const form = document.getElementById('nameForm');
+  const nameInput = document.getElementById('name');
+  const telInput = document.getElementById('tel');
+  const MAX_NAME = 50;
+
+const subject = sessionStorage.getItem('contact_subject');
+const detail  = sessionStorage.getItem('contact_detail'); 
+
+if (!subject) {
+  alert("前の画面からやり直してください");
+  location.href = "contact.html";
+  return;
+}
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let ok = true;
+
+    const name = nameInput.value.trim();
+    const tel  = telInput.value.trim();
+
+    if (!validate.isRequired(name)) {
+      showError(nameInput, 'お名前をご入力ください');
+      ok = false;
+    } else if (!validate.isMaxLength(name, MAX_NAME)) {
+      showError(nameInput, `お名前は${MAX_NAME}文字以内で入力してください`);
+      ok = false;
+    } else {
+      hideError(nameInput);
+    }
+
+    if (tel && !validate.isTel(tel)) {
+      showError(telInput, '電話番号の形式が正しくありません（半角数字7〜20桁）');
+      ok = false;
+    } else {
+      hideError(telInput);
+    }
+
+    if (!ok) return;
+
+    sessionStorage.setItem('contact_name', name);
+    sessionStorage.setItem('contact_tel', tel);
+
+    location.href = "confirm.html"; 
+  });
+});
+</script>
+</body>
+</html>
+

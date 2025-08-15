@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>削除完了</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>用件を削除しました。</h1>
+    
+    <a href="dashboard.html" class="btn-lg">ダッシュボードへ</a>
+    
+    <p class="auto-return">※60秒後に自動でトップページに戻ります</p>
+  </div>
+
+	<script>
+  	const token = localStorage.getItem('token');
+ 	  if (!token) {
+   	  window.location.href = 'login.html';
+ 	 }
+
+	  setTimeout(() => {
+   	 window.location.href = 'dashboard.html';
+ 	 }, 60000);
+</script>
+</body>
+</html>

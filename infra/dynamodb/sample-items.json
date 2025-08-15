@@ -1,0 +1,9 @@
+{
+  "admins": [
+    { "id": { "S": "admin001" }, "password": { "S": "$2b$10$examplehash" } }
+  ],
+  "tasks": [
+    { "subject": { "S": "〇〇について" } }
+  ]
+}
+

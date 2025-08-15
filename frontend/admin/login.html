@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理者フォーム</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>管理者フォーム</h1>
+    <p class="sub-text">
+      こちらは問い合わせ用フォームではありません。恐れ入りますが、戻るボタンを押して、
+      「お問い合わせフォーム」よりお問い合わせをしてください。
+    </p>
+
+    <form id="loginForm" novalidate>
+      <label for="loginId">ID</label>
+      <input type="text" id="loginId" name="loginId" maxlength="50">
+      <p class="error" hidden></p>
+
+      <label for="password">パスワード</label>
+      <input type="text" id="password" name="password" maxlength="64">
+      <p class="error" hidden></p>
+
+      <div class="btn-col">
+        <button type="submit" class="btn-sm btn-primary">ログイン</button>
+        <a href="/" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="/asset/js/common.js?v=5"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const { validate, showError, hideError } = window.Common;
+
+      const form     = document.getElementById('loginForm');
+      const loginId  = document.getElementById('loginId');
+      const password = document.getElementById('password');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let ok = true;
+
+        const idVal   = loginId.value.trim();
+        const passVal = password.value.trim();
+
+        if (!validate.isRequired(idVal)) {
+          showError(loginId, 'IDを入力してください');
+          ok = false;
+        } else {
+          hideError(loginId);
+        }
+
+        if (!validate.isRequired(passVal)) {
+          showError(password, 'パスワードを入力してください');
+          ok = false;
+        } else {
+          hideError(password);
+        }
+
+        if (!ok) return;
+
+        try {
+          console.log('送信データ:', { id: idVal, password: passVal });
+
+          const res = await fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: idVal, password: passVal })
+          });
+
+          const text = await res.text();
+          console.log('生レスポンス（text）:', text);
+
+          let parsed;
+          try {
+            parsed = JSON.parse(text);
+            console.log('パース後のレスポンス:', parsed);
+          } catch (jsonErr) {
+            console.error('JSONパース失敗:', jsonErr);
+            showError(password, 'レスポンスの解析に失敗しました');
+            return;
+          }
+
+          let body;
+          if (parsed.token || parsed.error) {
+            body = parsed;
+          } else if (typeof parsed.body === 'string') {
+            body = JSON.parse(parsed.body);
+          } else {
+            body = parsed.body || {};
+          }
+          console.log('最終body:', body);
+
+          if (res.status !== 200 || !body.token) {
+            showError(password, body.error || 'ログインに失敗しました');
+            return;
+          }
+
+          localStorage.setItem('token', body.token);
+          window.location.href = 'dashboard.html';
+
+        } catch (err) {
+          console.error('通信エラー:', err);
+          showError(password, 'サーバーと通信できませんでした');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

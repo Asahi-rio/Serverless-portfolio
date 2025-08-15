@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>お問い合わせフォーム</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>どのようなご用件でしょうか？</h1>
+
+    <form id="contactForm" novalidate>
+      <label for="subject"> ご用件 <span class="required">※必ず選択してください</span>
+      </label>
+      <select id="subject" name="subject" required>
+        <option value="">選択してください</option>
+      </select>
+
+      <label for="detail">詳細など <span class="helper">※任意</span>
+      </label>
+      <textarea id="detail" name="detail" maxlength="300" placeholder="300文字以内でご入力ください。"></textarea>
+      <div class="char-count"><span id="detailCount">0</span> / 300</div>
+
+      <div class="btn-col">
+        <button type="submit" class="btn-sm btn-primary">次へ</button>
+        <a href="/" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </form>
+  </div>
+
+<script src="asset/js/common.js?v=5" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.Common) {
+    console.error('[contact.js] Common が未定義です');
+    return;
+  }
+
+  const { validate, showError, hideError, bindCharCount } = Common;
+
+  const form    = document.getElementById('contactForm');
+  const subject = document.getElementById('subject');
+  const detail  = document.getElementById('detail');
+  const counter = document.getElementById('detailCount');
+  const MAX = 300;
+
+  if (!form || !subject || !detail) return;
+  if (counter) bindCharCount(detail, counter, MAX);
+
+fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/tasks')
+  .then(res => res.text())
+  .then(text => {
+
+    const try1 = JSON.parse(text);
+
+    let items;
+
+    // パターン①：プロキシ統合形式
+    if (typeof try1.body === 'string') {
+      const body = JSON.parse(try1.body);
+      items = body.items;
+    }
+    // パターン②：直接 items を含んでいる
+    else if (Array.isArray(try1.items)) {
+      items = try1.items;
+    }
+    // パターン③：異常
+    else {
+      console.error('形式が不明です:', try1);
+      return;
+    }
+
+    items.forEach(task => {
+      if (task.subject) {
+        const opt = document.createElement('option');
+        opt.value = task.subject;
+        opt.textContent = task.subject;
+        subject.appendChild(opt);
+      }
+    });
+  })
+  .catch(err => {
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let ok = true;
+
+    if (!validate.isRequired(subject.value) || subject.value === "") {
+      showError(subject, 'ご用件を選択してください。');
+      ok = false;
+    } else {
+      hideError(subject);
+    }
+
+    if (!validate.isMaxLength(detail.value, MAX)) {
+      showError(detail, `300文字以内で入力してください（現在 ${detail.value.length} 文字）。`);
+      ok = false;
+    } else {
+      hideError(detail);
+    }
+
+    if (!ok) return;
+
+    const subjectText = subject.options[subject.selectedIndex].textContent;
+    sessionStorage.setItem('contact_subject', subjectText);
+    sessionStorage.setItem('contact_detail', detail.value);
+
+    fetch("https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: subjectText,
+        detail: detail.value
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(() => {
+      location.href = "name.html";
+    })
+    .catch(err => {
+      alert("送信に失敗しました。時間をおいて再度お試しください。");
+    });
+  });
+});
+</script>
+
+</body>
+</html>
+

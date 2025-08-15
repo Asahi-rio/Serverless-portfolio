@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>用件削除</title>  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>用件削除</h1>
+
+    <form id="deleteForm" action="resultfalse.html">
+      
+      <label for="task1">削除する用件を選択してください <span class="required">※必ずご選択ください</span></label>
+	<select id="task1" name="task1" class="delete-formselect">
+ 	 <option value="">選択してください</option>
+	</select>
+      
+      <label for="task2">削除する用件を選択してください <span class="helper">任意</span></label>
+      <select id="task2" name="task2" class="delete-formselect">
+        <option value="">選択してください</option>
+      </select>
+
+      <label for="task3">削除する用件を選択してください <span class="helper">任意</span></label>
+      <select id="task3" name="task3" class="delete-formselect">
+        <option value="">選択してください</option>
+      </select>
+
+      <div class="btn-col">
+        <button type="submit" class="btn-sm btn-primary">次へ</button>
+        <a href="dashboard.html" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="/asset/js/common.js?v=5" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { validate, showError, hideError } = window.Common;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const form = document.getElementById('deleteForm');
+    const s1   = document.getElementById('task1');
+    const s2   = document.getElementById('task2');
+    const s3   = document.getElementById('task3');
+    const selects = [s1, s2, s3];
+
+    try {
+      const res = await fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/tasks', {
+        method: 'GET'
+      });
+
+	const text = await res.text();
+	const parsed = JSON.parse(text);
+	const tasks = parsed.items;
+
+	　if (!Array.isArray(tasks)) {
+ 	 throw new Error('形式エラー：配列ではありません');
+	}
+
+	populateSelect(s1, tasks, { includeEmpty: false });
+	populateSelect(s2, tasks, { includeEmpty: true });
+	populateSelect(s3, tasks, { includeEmpty: true });
+
+    } catch (err) {
+      console.error('一覧取得失敗:', err);
+      alert('削除対象の一覧取得に失敗しました。');
+    }
+
+    function populateSelect(select, items, { includeEmpty }) {
+      select.innerHTML = '';
+
+      if (includeEmpty) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '選択しない';
+        select.appendChild(opt);
+      }
+
+      items.forEach(task => { 
+        const opt = document.createElement('option');
+        opt.value = task.subject;
+        opt.textContent = task.subject;
+        select.appendChild(opt);
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const values = [s1.value, s2.value, s3.value].filter(v => v);
+
+      if (!validate.isRequired(s1.value)) {
+        showError(s1, '1つ目の用件は必ず選択してください。');
+        s1.focus();
+        return;
+      }
+      hideError(s1);
+
+      const duplicates = values.filter((v, i, arr) => arr.indexOf(v) !== i);
+      if (duplicates.length > 0) {
+        showError(s1, '同じ用件を複数回選択することはできません。');
+        s1.focus();
+        return;
+      }
+
+      hideError(s1);
+
+      try {
+        for (const subject of values) {
+          const res = await fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/tasks', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ subject })
+          });
+
+          const resultText = await res.text();
+          const result = JSON.parse(resultText);
+
+          if (res.status !== 200) {
+            alert(result.error || `削除に失敗しました：${subject}`);
+            return;
+          }
+        }
+
+        window.location.href = 'resultfalse.html';
+
+      } catch (err) {
+        console.error('通信エラー:', err);
+        alert('サーバーと通信できませんでした');
+      }
+    });
+
+    s1.addEventListener('change', () => {
+      if (validate.isRequired(s1.value)) {
+        hideError(s1);
+      }
+    });
+  });
+</script>
+</body>
+</html>

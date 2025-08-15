@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>送信完了</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ご利用いただきありがとうございます。</h1>
+    <p class="sub-text">
+      お問い合わせ確認でき次第、お電話させていただきます。<br>
+      お待ちいただければ幸いです。
+    </p>
+    
+    <a href="/" class="btn-lg">トップページ</a>
+    
+    <p class="auto-return">※60秒後に自動でトップページに戻ります</p>
+  </div>
+
+  <script>
+    // 60秒後にトップページへ自動リダイレクト
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 60000); // 60000ms = 60秒
+  </script>
+</body>
+</html>

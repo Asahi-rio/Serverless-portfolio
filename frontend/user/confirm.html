@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>確認画面</title>
+  <link rel="stylesheet" href="/asset/css/style.css">
+  <style>
+    input[readonly], textarea[readonly] {
+      background: #fafafa;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>以下の内容でよろしいですか？</h1>
+
+    <!-- 表示用 -->
+    <div>
+      <!-- お名前 -->
+      <label>お名前</label>
+      <input type="text" id="confirmName" readonly>
+
+      <!-- お電話番号 -->
+      <label>お電話番号</label>
+      <input type="text" id="confirmTel" readonly>
+
+      <!-- ご用件 -->
+      <label>ご用件</label>
+      <input type="text" id="confirmSubject" readonly>
+
+      <!-- 詳細など -->
+      <label>詳細など</label>
+      <textarea id="confirmDetail" readonly></textarea>
+
+      <div class="btn-col">
+        <button id="nextBtn" type="button" class="btn-sm btn-primary">次へ</button>
+        <a href="name.html" class="btn-sm btn-outline">戻る</a>
+      </div>
+    </div>
+  </div>
+
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  const name    = sessionStorage.getItem('contact_name');
+  const tel     = sessionStorage.getItem('contact_tel') || '（未入力）';
+  const subject = sessionStorage.getItem('contact_subject');
+  const detail  = sessionStorage.getItem('contact_detail') || '（未入力）';
+
+  if (!name || !subject) {
+    alert("前の画面からやり直してください");
+    location.href = "name.html";
+    return;
+  }
+
+  document.getElementById('confirmName').value = name;
+  document.getElementById('confirmTel').value = tel;
+  document.getElementById('confirmSubject').value = subject;
+  document.getElementById('confirmDetail').value = detail;
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    // 送信だけして遷移は確実に行う（非同期の完了を待たない）
+    fetch('https://v9peg95rqg.execute-api.ap-northeast-1.amazonaws.com/prod/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: sessionStorage.getItem('contact_name'),
+        tel: sessionStorage.getItem('contact_tel'),
+        subject: sessionStorage.getItem('contact_subject'),
+        detail: sessionStorage.getItem('contact_detail')
+      })
+    });
+
+    // 送信に失敗しても気にせず進む仕様
+    location.href = "send.html";
+  });
+});
+</script>
+
+</body>
+</html>
+

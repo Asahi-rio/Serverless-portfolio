@@ -1,0 +1,279 @@
+/* ==== ベース ==== */
+html { font-size: 16px; }
+body {
+  font-family: "Times New Roman", "游明朝", "YuMincho", "ヒラギノ明朝 ProN W3", serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+/* ==== 共通コンテナ（外周の黒枠は付けません） ==== */
+.container {
+  max-width: 768px;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;   /* 上寄せ */
+  align-items: center;
+  padding: 60px 20px 20px;
+  box-sizing: border-box;
+}
+
+/* ==== 見出し・本文 ==== */
+h1 {
+  font-size: calc(1.9375em * 1.5);
+  line-height: 1.6;
+  font-weight: normal;
+}
+.sub-text {
+  margin: 2.5rem 0;
+  font-size: calc(1.25em * 1.5);
+  color: #333;
+  line-height: 1.7;
+}
+
+/* ==== トップページ用の大きめボタン（必要なら） ==== */
+a.btn-lg {
+  display: inline-block;
+  text-decoration: none;
+  font-size: calc(1.5em * 1.5);
+  padding: 1em 1.8em;
+  border: 2px solid #000;
+  border-radius: 12px;
+  color: #000;
+  background: #fff;
+  transition: background-color .2s;
+}
+a.btn-lg:hover { background: #f0f0f0; }
+
+/* ==== contact.html ==== */
+
+/* フォームコンテナ */
+.form-container {
+  padding: 60px 25px; /* 上下左右の余裕を増加 */
+}
+.form-container h1 {
+  margin-bottom: 2em; /* タイトル下の間隔を拡大 */
+}
+
+
+/* ラベル・必須表示 */
+label {
+  font-size: 1.5em; /* 24pxに拡大 */
+  margin-bottom: 0.6em;
+}
+.required {
+  font-size: 1.2em; /* 赤文字も少し大きく */
+}
+
+select, textarea {
+  padding: 20px;        /* 縦方向の余裕を増やす */
+  font-size: 1.5em;     /* フォントも少し拡大 */
+  margin-bottom: 2em;   /* 下の間隔を広めに */
+}
+
+textarea {
+  height: 200px;        /* 元120px → 160pxに拡大 */
+}
+
+#subject{
+	  margin-bottom: 1.5em; /* 感覚に余裕を持たせよう */
+}
+
+/* ==== フォーム用（小さめ）ボタン ==== */
+.btn-sm {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1.3em;
+  line-height: 1.2;
+  padding: 0.8em 2em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.btn-primary {
+  background: #4a8db7;
+  color: #fff;
+  border: 1px solid #000;
+}
+.btn-primary:hover { background: #3b769a; }
+.btn-outline {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+.btn-outline:hover { background: #f0f0f0; }
+
+/* ボタンを縦並び(column)に */
+.btn-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ==== 歯車（角丸5%の四角形） ==== */
+.gear-link {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #000;
+  border-radius: 5%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.gear-link img {
+  width: 42px;
+  height: 42px;
+  display: block;
+}
+
+/* ==== お問い合わせフォーム共通 ==== */
+.form-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: left;
+  background: #fff;
+  /* 外周の黒枠は付けない（ガイド線はデザインに含めない） */
+}
+.form-container h1 {
+  text-align: center;
+  font-size: calc(1.9375em * 1.5);
+  margin-bottom: 1.5em;
+}
+label {
+  display: block;
+  font-size: 1.5em;
+  margin-bottom: 0.4em;
+}
+
+
+.required {
+  color: red;
+  font-size: 0.85em;
+  margin-left: 0.3em;
+}
+select, textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1.1em;
+  border: 1px solid #000;
+  border-radius: 10px;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  font-family: inherit;
+}
+textarea {
+  height: 120px;
+  resize: none;
+}
+.helper {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 1.2em;
+}
+.error {
+  color: #d00;
+  font-size: 1.25em;
+  margin: -0.3em 0 0.5em; /* 上方向に寄せる */
+}
+.invalid {
+  border-color: #d00 !important;
+}
+.char-count {
+  font-size: 0.85em;
+  color: #666;
+  text-align: right;
+  margin-bottom: 1em;
+}
+
+
+
+/* ==== name.html ==== */
+/* select / textarea と同じ見た目にしたい input 用 */
+input[type="text"],
+input[type="tel"]{
+  width: 100%;
+  padding: 14px;
+  font-size: 1.3em;
+  border: 1px solid #000;
+  border-radius: 10px;
+  box-sizing: border-box;
+  margin-bottom: 2em;
+  font-family: inherit;
+}
+
+    /* 下部の自動戻りメッセージ */
+    .auto-return {
+      margin-top: 50px;
+      font-size: 1.2em;
+      color: #333;
+    }
+    
+ /* ==== dashboad.html ==== */   
+    
+.btn-col2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* ボタンを中央寄せ */
+  gap: 80px;
+  width: 100%;          /* 親要素幅いっぱいに */
+  max-width: 420px;     /* ボタン列の最大幅 */
+  margin: 0 auto;       /* 親を中央寄せ */
+}
+
+.adm-btn {
+  display: block;
+  text-decoration: none;
+  font-size: 2rem;
+  padding: 1.0em;
+  width: 80%;          /* ここは.btn-col2の幅に依存 */
+  border: none;
+  border-radius: 20px;
+  color: #fff;
+  background: #666;
+  transition: opacity .2s;
+}
+
+/* 個別色 */
+.adm-btn--register { background: #4a89dc; }
+.adm-btn--delete   { background: #b37a2c; }
+.adm-btn--logout   { background: #c44; }
+
+/* もしホバー時だけ変えたいなら */
+.adm-btn--register:hover { opacity: .9; }
+.adm-btn--delete:hover   { opacity: .9; }
+.adm-btn--logout:hover   { opacity: .9; }
+
+/* registration/delete共通　*/
+
+/* 必須ラベルの赤文字（既にあればスキップ） */
+.required {
+  color: red;
+  font-size: 0.85em;
+  margin-left: 0.3em;
+}
+
+/* ==== delete.html の select ==== */
+.delete-formselect {
+  width: 100%;        
+  padding: 14px;       
+  font-size: 1.3em;      
+  border: 1px solid #000;  
+  border-radius: 10px;  
+  box-sizing: border-box;
+  margin-bottom: 2em;         
+  font-family: inherit;       
+  background-color: #fff;     
+}
+
+
